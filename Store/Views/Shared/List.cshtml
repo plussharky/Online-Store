@@ -1,0 +1,17 @@
+﻿@using Store.Models.ViewModels
+@model ProductsListViewModel
+@{
+    Layout = "_Layout";
+}
+
+@foreach (var p in Model.products)
+{
+   @Html.Partial("ProductSummary", p)
+}
+
+<div page-model="@Model.pagingInfo" page-action="List" page-classes-enabled="true"
+     page-class="btn" page-class-normal="btn-secondary"
+     page-class-selected="btn-primary" page-url-category="@Model.currentCategory"
+     class="btn-group pull-right m-1" style="width:auto">
+</div>
+

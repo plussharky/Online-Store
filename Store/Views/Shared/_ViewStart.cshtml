@@ -1,0 +1,11 @@
+﻿@*@model IEnumerable<Product>
+@{
+    Layout = "_Layout";
+}
+@foreach (var p in Model) {
+    <div>
+        <h1>@p.Name</h1>
+        <h2>@p.Category</h2>
+        <h3>@p.Price</h3>
+    </div>
+}*@
