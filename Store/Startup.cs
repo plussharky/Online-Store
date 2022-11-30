@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 
 namespace Store
 {
@@ -22,7 +23,9 @@ namespace Store
             options.UseSqlServer(
             //"Server=(localdb)\\MSSQLLocalDB;Database=Store;Trusted_Connection=True;MultipleActiveResultSets=true"));
             //"Server=(localdb)\\MSSQLLocalDB; Database=Store; Trusted_Connection=True; MultipleActiveResultSets=True;"));
-            "Server=localhost;Database=master;Trusted_Connection=True;"));
+            "Server=localhost;Database=masterr;Trusted_Connection=True;"));
+            services.AddDbContext<AppIdentityDbContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IProductRepository, EFProductRepository>();
             services.AddRazorPages();
             services.AddMemoryCache();
@@ -31,7 +34,9 @@ namespace Store
             services.AddTransient<IOrderRepository, EFOrderRepository>();
             services.AddSession();
             services.AddHttpContextAccessor();
-            services.AddControllersWithViews();  
+            services.AddControllersWithViews();
+            ConfigureCookieSettings(services);
+            CreateIdentityIfNotCreated(services);
         }
         public void Configure(WebApplication app, IWebHostEnvironment env)
         {
@@ -50,6 +55,8 @@ namespace Store
             app.UseAuthorization();
             app.MapRazorPages();
             app.UseSession();
+            app.UseAuthentication();
+            app.UseAuthorization();
             //app.MapControllerRoute(
             //    name: "default",
             //    pattern: "{controller=Product}/{action=List}/{id?}"
@@ -88,6 +95,43 @@ namespace Store
             });
 
             app.Run();
+        }
+
+        private static void CreateIdentityIfNotCreated(IServiceCollection services)
+        {
+            var sp = services.BuildServiceProvider();
+            using (var scope = sp.CreateScope())
+            {
+                var existingUserManager = scope.ServiceProvider
+                    .GetService<UserManager<ApplicationUser>>();
+                if (existingUserManager == null)
+                {
+                    services.AddIdentity<ApplicationUser, IdentityRole>()
+                        //.AddDefaultUI()
+                        .AddEntityFrameworkStores<AppIdentityDbContext>()
+                                        .AddDefaultTokenProviders();
+                }
+            }
+        }
+
+        private static void ConfigureCookieSettings(IServiceCollection services)
+        {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.Cookie = new CookieBuilder
+                {
+                    IsEssential = true
+                };
+            });
         }
     }
 }
