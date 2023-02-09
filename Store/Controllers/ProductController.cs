@@ -13,25 +13,34 @@ namespace Store.Controllers
             repository = repo;
         }
 
-        public ViewResult List(string category, int productPage = 1) =>
-            View(new ProductsListViewModel
+        public ViewResult List(string category, int productPage = 1)
+        {
+            return View(new ProductsListViewModel
             {
                 pagingInfo = new PagingInfo
                 {
                     CurrentPage = productPage,
                     ItemsPerPage = PageSize,
                     TotalItems = category == null ?
-                    repository.Products.Count() :
-                    repository.Products.Where(p => p.Category == category)
-                    .Count()
+                     repository.Products.Count() :
+                     repository.Products.Where(p => p.Category == category)
+                     .Count()
                 },
                 products = repository.Products
-                .Where(p => category == null || p.Category == category)
-                .OrderBy(p => p.ProductID)
-                .Skip((productPage - 1) * PageSize)
-                .Take(PageSize),
+                 .Where(p => category == null || p.Category == category)
+                 .OrderBy(p => p.ProductID)
+                 .Skip((productPage - 1) * PageSize)
+                 .Take(PageSize),
                 currentCategory = category
             });
-            
+        }
+
+        public ViewResult About(int productId)
+        {
+            Product product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
+            if (product == null)
+                return View(); // Not Found 
+            return View(product);
+        }
     }
 }

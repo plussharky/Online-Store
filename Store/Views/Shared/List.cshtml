@@ -3,7 +3,10 @@
 @{
     Layout = "_Layout";
 }
-
+<div class="row">
+    <div id="categories">
+        @await Component.InvokeAsync("NavigationMenu")
+</div>
 @foreach (var p in Model.products)
 {
    @Html.Partial("ProductSummary", p)

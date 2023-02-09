@@ -7,10 +7,8 @@ namespace Store.Models
 {
     public class SeedData
     {
-        public static void EnsurePopulated(WebApplication app) //(IApplicationBuilder app)
+        public static void EnsurePopulated(ApplicationDbContext context)
         {
-            using var scope = app.Services.CreateScope();
-            ApplicationDbContext context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             context.Database.Migrate();
             if (!context.Products.Any())
             {

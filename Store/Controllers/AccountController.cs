@@ -79,7 +79,7 @@ namespace Store.Controllers
                     signInManager.SignInAsync(user, false);
                     var claims = new List<Claim>()
                     {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
                     };
                     User.AddIdentity(new ClaimsIdentity(claims, "ApplicationCookie",
                         ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType));

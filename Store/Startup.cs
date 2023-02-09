@@ -21,11 +21,9 @@ namespace Store
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
-            //"Server=(localdb)\\MSSQLLocalDB;Database=Store;Trusted_Connection=True;MultipleActiveResultSets=true"));
-            //"Server=(localdb)\\MSSQLLocalDB; Database=Store; Trusted_Connection=True; MultipleActiveResultSets=True;"));
-            "Server=localhost;Database=masterr;Trusted_Connection=True;"));
+            Configuration.GetConnectionString("MainServer")));
             services.AddDbContext<AppIdentityDbContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+               options.UseSqlServer(Configuration.GetConnectionString("IdentityServer")));
             services.AddTransient<IProductRepository, EFProductRepository>();
             services.AddRazorPages();
             services.AddMemoryCache();
@@ -48,7 +46,6 @@ namespace Store
             }
             var scope = ((IApplicationBuilder)app).ApplicationServices.CreateScope();
             var service = scope.ServiceProvider.GetService<IProductRepository>();
-            SeedData.EnsurePopulated(app);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
@@ -57,11 +54,12 @@ namespace Store
             app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.MapControllerRoute(
-            //    name: "default",
-            //    pattern: "{controller=Product}/{action=List}/{id?}"
-            //    );
-
+            using (scope = app.Services.CreateScope())
+            {
+                ApplicationDbContext appContext = 
+                    scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                SeedData.EnsurePopulated(appContext);
+            }
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -2,7 +2,10 @@
 
 <div class="card card-outline-primary m-1 p-1">
     <div class="bg-faded p-1">
-        <h4>@Model.Name</h4>
+        <a class="text-decoration-none text-primary" s asp-action="About" asp-controller="Product"
+            asp-route-productId="@Model.ProductID">
+            <h4>@Model.Name</h4>
+        </a>
         <p>@Model.Category</p>
         <form id="@Model.ProductID" asp-action="AddToCart"
           asp-controller="Cart" method="post">
@@ -15,6 +18,4 @@
         </form>
         <span class="card-text p-1"> @Model.Description</span>
     </div>
-
-
 </div>
