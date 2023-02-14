@@ -3,13 +3,11 @@
 @{
     Layout = "_Layout";
 }
-<div class="row">
-    <div id="categories">
-        @await Component.InvokeAsync("NavigationMenu")
-</div>
+@await Html.PartialAsync("SearchField")
+@await Component.InvokeAsync("NavigationMenu")
 @foreach (var p in Model.products)
 {
-   @Html.Partial("ProductSummary", p)
+    @await Html.PartialAsync("ProductSummary", p)
 }
 
 <div page-model="@Model.pagingInfo" page-action="List" page-classes-enabled="true"

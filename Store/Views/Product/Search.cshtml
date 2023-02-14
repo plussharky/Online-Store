@@ -1,0 +1,14 @@
+﻿@using Store.Models
+@model IQueryable<Product>
+@{
+    Layout = "_Layout";
+}
+
+@await Html.PartialAsync("SearchField")
+<h2 class="text-center p-1">Search result for "@(TempData["request"] ?? "Search request was null")"</h2>
+@await Component.InvokeAsync("NavigationMenu")
+<h4 class="text-center p-1">@Model.Count() products was founded:</h4>
+@foreach (var p in Model)
+{
+    @await Html.PartialAsync("ProductSummary", p)
+}

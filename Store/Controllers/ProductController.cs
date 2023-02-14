@@ -35,11 +35,24 @@ namespace Store.Controllers
             });
         }
 
-        public ViewResult About(int productId)
+        public IActionResult Search(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return RedirectToAction(nameof(List));
+            List<Product> a = repository.Products.Where(x => x.Name.ToUpper().Contains(name.ToUpper())).ToList();
+            List<Product> b = repository.Products.Where(x => x.Description.ToUpper().Contains(name.ToUpper())).ToList();
+            IQueryable <Product> searchProducts = repository.Products
+                .Where(x => x.Name.ToUpper().Contains(name.ToUpper())
+                || x.Description.ToUpper().Contains(name.ToUpper()));
+            TempData["request"] = name;
+            return View(searchProducts);
+        }
+
+        public IActionResult About(int productId)
         {
             Product product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
             if (product == null)
-                return View(); // Not Found 
+                return NotFound(); // Not Found 
             return View(product);
         }
     }
