@@ -4,6 +4,7 @@
     Layout = "_Layout";
 }
 @await Html.PartialAsync("SearchField")
+@await Html.PartialAsync("Banners")
 @await Component.InvokeAsync("NavigationMenu")
 @foreach (var p in Model.products)
 {
